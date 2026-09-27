@@ -6,9 +6,7 @@ Usage: scripts/export-hub.py <hub-content-dir>/agents/plugins
 Writes ONE page, index.md, that combines:
   - the landing template below (hero + animated shells via <AgentShells />),
   - docs/galaxy-api-key.md as the "Get a Galaxy API key" section,
-  - every harness doc as a <HarnessGuide> panel inside <HarnessGuides>,
-plus a redirect stub for each old per-harness URL (<slug>/index.md ->
-/agents/plugins/#guide-<slug>) so existing links keep working.
+  - every harness doc as a <HarnessGuide> panel inside <HarnessGuides>.
 
 The docs remain the source of truth; rerun after editing them. Links between
 docs become in-page anchors, repo-relative links become GitHub URLs, each H1 is
@@ -29,7 +27,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 REPO_URL = "https://github.com/galaxyproject/agentic-plugins"
-HUB_BASE = "/agents/plugins"
 
 API_KEY_DOC = "galaxy-api-key.md"
 API_KEY_ANCHOR = "#get-a-galaxy-api-key"
@@ -43,9 +40,6 @@ GUIDES = [  # (docs file, hub id, display name) — order and ids match scenes.t
     # held back from the hub for now; re-enable together with the Cursor scene in galaxy-hub
     # ("cursor.md", "cursor", "Cursor"),
 ]
-
-# Old per-page slugs that now redirect into the single page.
-REDIRECTS = {"api-key": API_KEY_ANCHOR, **{gid: f"#guide-{gid}" for _, gid, _ in GUIDES}}
 
 LANDING = f"""---
 title: "Galaxy for AI Coding Agents"
@@ -170,11 +164,6 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
     (out / "index.md").write_text(landing())
     print(f"wrote {out / 'index.md'}")
-    for slug, anchor in REDIRECTS.items():
-        page = out / slug
-        page.mkdir(exist_ok=True)
-        (page / "index.md").write_text(f'---\nredirect: "{HUB_BASE}/{anchor}"\n---\n')
-        print(f"wrote {page / 'index.md'} -> {HUB_BASE}/{anchor}")
     return 0
 
 
