@@ -49,7 +49,7 @@ REDIRECTS = {"api-key": API_KEY_ANCHOR, **{gid: f"#guide-{gid}" for _, gid, _ in
 
 LANDING = f"""---
 title: "Galaxy for AI Coding Agents"
-tease: "Connect Claude Code, Codex, Antigravity or Pi to your Galaxy server with curated Galaxy skills, or Claude Desktop with the Galaxy connection alone."
+tease: "Connect Claude Code, Codex, Antigravity or Pi to your Galaxy server with curated Galaxy skills, or add the Galaxy MCP server to Claude Desktop as a one-click bundle."
 subsites: [all]
 components: true
 autotoc: false
