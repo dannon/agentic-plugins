@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Export docs/ as the Galaxy Hub page /tools/ai-agents/ (galaxyproject/galaxy-hub).
+"""Export docs/ as the Galaxy Hub page /agents/plugins/ (galaxyproject/galaxy-hub).
 
-Usage: scripts/export-hub.py <hub-content-dir>/tools/ai-agents
+Usage: scripts/export-hub.py <hub-content-dir>/agents/plugins
 
 Writes ONE page, index.md, that combines:
   - the landing template below (hero + animated shells via <AgentShells />),
   - docs/galaxy-api-key.md as the "Get a Galaxy API key" section,
   - every harness doc as a <HarnessGuide> panel inside <HarnessGuides>,
 plus a redirect stub for each old per-harness URL (<slug>/index.md ->
-/tools/ai-agents/#guide-<slug>) so existing links keep working.
+/agents/plugins/#guide-<slug>) so existing links keep working.
 
 The docs remain the source of truth; rerun after editing them. Links between
 docs become in-page anchors, repo-relative links become GitHub URLs, each H1 is
@@ -29,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 REPO_URL = "https://github.com/galaxyproject/agentic-plugins"
-HUB_BASE = "/tools/ai-agents"
+HUB_BASE = "/agents/plugins"
 
 API_KEY_DOC = "galaxy-api-key.md"
 API_KEY_ANCHOR = "#get-a-galaxy-api-key"
@@ -71,7 +71,7 @@ your harness under [Set up your agent](#set-up-your-agent).
 
 <div class="callout">
 Looking for a complete AI research assistant built around Galaxy rather than a
-plugin for the agent you already use? See <a href="/tools/orbit/">Orbit</a>.
+plugin for the agent you already use? See <a href="/agents/orbit/">Orbit</a>.
 </div>
 
 ## Before you start
