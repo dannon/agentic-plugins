@@ -4,7 +4,8 @@
 Usage: scripts/export-hub.py <hub-content-dir>/agents/plugins
 
 Writes ONE page, index.md, that combines:
-  - the landing template below (hero + animated shells via <AgentShells />),
+  - the landing template below (hero + animated shells via <AgentShells />,
+    then the sections in the hub's full-width ag-band wrappers),
   - docs/galaxy-api-key.md as the "Get a Galaxy API key" section,
   - every harness doc as a <HarnessGuide> panel inside <HarnessGuides>.
 
@@ -55,18 +56,7 @@ generated_from: {REPO_URL}/blob/main/scripts/export-hub.py
 
 <AgentShells />
 
-Galaxy for AI coding agents installs the galaxy-mcp server, the galaxy-skills
-and galaxy-dev-skills sets and the Workflow Foundry skills into Claude Code,
-Codex, Antigravity or Pi; Claude Desktop gets the galaxy-mcp server as a
-one-click bundle. Everything comes from the
-[galaxyproject/agentic-plugins]({REPO_URL})
-repository, and everything you need is on this page: get an API key, then pick
-your harness under [Set up your agent](#set-up-your-agent).
-
-<div class="callout">
-Looking for a complete AI research assistant built around Galaxy rather than a
-plugin for the agent you already use? See <a href="/agents/orbit/">Orbit</a>.
-</div>
+<div class="ag-band ag-band--white">
 
 ## Before you start
 
@@ -98,6 +88,10 @@ adding the MCP server by hand with `uvx galaxy-mcp`.
 
 </HarnessGuides>
 
+</div>
+
+<div class="ag-band">
+
 ## What the agent can do once connected
 
 Ask in plain language; the agent picks the Galaxy tools:
@@ -117,6 +111,8 @@ Ask in plain language; the agent picks the Galaxy tools:
 - Skill content lives upstream in [galaxy-skills](https://github.com/galaxyproject/galaxy-skills)
   and [foundry](https://github.com/galaxyproject/foundry); the plugins mirror
   them weekly.
+
+</div>
 """
 
 
