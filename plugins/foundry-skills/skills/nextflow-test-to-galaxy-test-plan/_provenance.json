@@ -4,11 +4,11 @@
   "mold": {
     "name": "nextflow-test-to-galaxy-test-plan",
     "path": "content/molds/nextflow-test-to-galaxy-test-plan/index.md",
-    "revision": 5,
-    "content_hash": "4507e5ff7ffaa9751cf80e33c28fec403766dc95197c0813821362711f603732",
-    "commit": "ac92d2713fb01b07049027e584b8610e07c88d82"
+    "revision": 7,
+    "content_hash": "2a8aaa5228eaa632c760ad10de9bfcdc1a7e4f034332b68cadc8a7f92cbe1e8c",
+    "commit": "586466b99aec09a13036ff891d7e187053b2cae3"
   },
-  "cast_at": "2026-09-16T14:18:37.392Z",
+  "cast_at": "2026-09-23T15:54:20.641Z",
   "refs": [
     {
       "kind": "research",
@@ -20,10 +20,10 @@
       "load": "on-demand",
       "evidence": "hypothesis",
       "purpose": "Interpret nf-test profiles, snapshot assertions, and Nextflow fixture conventions before translating them.",
-      "trigger": "When converting nf_tests, snapshot fixtures, test profiles, or source test-data references into a Galaxy workflow test plan.",
+      "trigger": "When converting test_candidates, snapshot fixtures, test profiles, or source test-data references into a Galaxy workflow test plan.",
       "verification": "Translate nf-core/bacass nf-test snapshots into a Galaxy test plan and confirm this note improves profile/snapshot extraction.",
-      "src_hash": "b3f6dd5de325f8b9d85cc597b928df70b9f842eb2d1d2652aa68bde8e2c325c7",
-      "dst_hash": "b3f6dd5de325f8b9d85cc597b928df70b9f842eb2d1d2652aa68bde8e2c325c7",
+      "src_hash": "1a429a25165e8ab3621aaef1c481db563f6280bf1f090b5257f937805346bc67",
+      "dst_hash": "1a429a25165e8ab3621aaef1c481db563f6280bf1f090b5257f937805346bc67",
       "source": "deterministic"
     },
     {
@@ -36,7 +36,7 @@
       "load": "on-demand",
       "evidence": "hypothesis",
       "purpose": "Interpret nf-test profiles, snapshot assertions, and Nextflow fixture conventions before translating them.",
-      "trigger": "When converting nf_tests, snapshot fixtures, test profiles, or source test-data references into a Galaxy workflow test plan.",
+      "trigger": "When converting test_candidates, snapshot fixtures, test profiles, or source test-data references into a Galaxy workflow test plan.",
       "companion_of": "references/notes/component-nextflow-testing.md",
       "src_hash": "7d4da038c82a7da9b4abf4a6cdd8480f73a235e155c8d9763d6bd3826acf818e",
       "dst_hash": "7d4da038c82a7da9b4abf4a6cdd8480f73a235e155c8d9763d6bd3826acf818e",
@@ -53,8 +53,8 @@
       "evidence": "corpus-observed",
       "purpose": "Distinguish accepted IWC-style test shortcuts from assertion smells while translating tests.",
       "trigger": "When deciding whether to use existence-only, size-only, image-dimension, or tolerant output checks.",
-      "src_hash": "14cc27c6a3e01588b06151535afdcb671cadd8e10dc960a248934e9133ebc8ab",
-      "dst_hash": "14cc27c6a3e01588b06151535afdcb671cadd8e10dc960a248934e9133ebc8ab",
+      "src_hash": "b3f691a59751114ab67588832ba978052ab2be2ab5ef775737177ad45d7bdc45",
+      "dst_hash": "b3f691a59751114ab67588832ba978052ab2be2ab5ef775737177ad45d7bdc45",
       "source": "deterministic"
     },
     {
@@ -68,8 +68,8 @@
       "evidence": "corpus-observed",
       "purpose": "Emit Galaxy/IWC-style job input fixtures, remote locations, hashes, and collection input shapes.",
       "trigger": "When writing job inputs or deciding whether fixtures belong in test-data, Zenodo, ENA/SRA, or CVMFS.",
-      "src_hash": "1921e939703444604440e0768caca6e6b834a73dcfa964f450fa081143e008d3",
-      "dst_hash": "1921e939703444604440e0768caca6e6b834a73dcfa964f450fa081143e008d3",
+      "src_hash": "d2a3f38968204ea6344a6948e6e834c717867c6ba0c5140b2650fd4731bece5f",
+      "dst_hash": "d2a3f38968204ea6344a6948e6e834c717867c6ba0c5140b2650fd4731bece5f",
       "source": "deterministic"
     },
     {
@@ -90,6 +90,21 @@
     {
       "kind": "research",
       "mode": "verbatim",
+      "ref": "[[nextflow-test-case-selection]]",
+      "src": "content/research/nextflow-test-case-selection/index.md",
+      "dst": "references/notes/nextflow-test-case-selection.md",
+      "used_at": "runtime",
+      "load": "on-demand",
+      "evidence": "corpus-observed",
+      "purpose": "Preserve the upstream candidate-selection rationale and distinguish primary coverage from bootstrap-only or reference-scale cases.",
+      "trigger": "When the selected case is minimal, tiny, full-scale, stub-only, or accompanied by deferred whole-pipeline candidates.",
+      "src_hash": "28a2c267d8fb26ce97b3472cca8a0a09c2295365c56600a2c0811c4be2752623",
+      "dst_hash": "28a2c267d8fb26ce97b3472cca8a0a09c2295365c56600a2c0811c4be2752623",
+      "source": "deterministic"
+    },
+    {
+      "kind": "research",
+      "mode": "verbatim",
       "ref": "[[planemo-asserts-idioms]]",
       "src": "content/research/planemo-asserts-idioms/index.md",
       "dst": "references/notes/planemo-asserts-idioms.md",
@@ -98,8 +113,8 @@
       "evidence": "corpus-observed",
       "purpose": "Describe Galaxy workflow-test assertion intent and tolerances for translated expected outputs.",
       "trigger": "When turning Nextflow expected outputs or snapshots into Galaxy test-plan assertions.",
-      "src_hash": "81b8feeccd891642572e587a494d1e4d3a1b369a19d92947626230494fd92beb",
-      "dst_hash": "81b8feeccd891642572e587a494d1e4d3a1b369a19d92947626230494fd92beb",
+      "src_hash": "4da914a226c93cca8a1cc2823043429c05da712e3ef051724d15959a7aef5b09",
+      "dst_hash": "4da914a226c93cca8a1cc2823043429c05da712e3ef051724d15959a7aef5b09",
       "source": "deterministic"
     },
     {
@@ -129,8 +144,8 @@
       "evidence": "corpus-observed",
       "purpose": "Read summarized nf-test profiles, snapshot fixtures, selected test data, params, and expected outputs.",
       "license": "MIT",
-      "src_hash": "6489309caa1d8f96c457cbc7da03d8a3fd5b5a873989e917b5e09080ff101527",
-      "dst_hash": "6489309caa1d8f96c457cbc7da03d8a3fd5b5a873989e917b5e09080ff101527",
+      "src_hash": "839e11b1892af74df3158377027e7d340a67dafdb9b5965d79e9715a1a109d54",
+      "dst_hash": "839e11b1892af74df3158377027e7d340a67dafdb9b5965d79e9715a1a109d54",
       "source": "deterministic"
     },
     {
@@ -165,7 +180,7 @@
     "consumes": [
       {
         "id": "summary-nextflow",
-        "description": "Structured Nextflow summary from [[summarize-nextflow]]; carries test_fixtures, nf_tests, snapshot evidence.",
+        "description": "Structured Nextflow summary from [[summarize-nextflow]]; carries test_candidates, test_selection, and snapshot evidence.",
         "inherited_schema": "[[summary-nextflow]]",
         "producers": [
           "summarize-nextflow"
