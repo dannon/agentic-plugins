@@ -13,7 +13,7 @@ Follow the procedure below and use the artifact/reference sections as the runtim
 
 ## Inputs
 
-- Read artifact `summary-nextflow`. Schema: summary-nextflow. Produced by `summarize-nextflow`. Structured Nextflow summary from summarize-nextflow; carries test_fixtures, nf_tests, snapshot evidence.
+- Read artifact `summary-nextflow`. Schema: summary-nextflow. Produced by `summarize-nextflow`. Structured Nextflow summary from summarize-nextflow; carries test_candidates, test_selection, and snapshot evidence.
 
 ## Outputs
 
@@ -30,21 +30,27 @@ Follow the procedure below and use the artifact/reference sections as the runtim
 
 ## Load On Demand
 
-- `references/notes/component-nextflow-testing.md`: Research note copied verbatim into the bundle. Interpret nf-test profiles, snapshot assertions, and Nextflow fixture conventions before translating them. Use when: converting nf_tests, snapshot fixtures, test profiles, or source test-data references into a Galaxy workflow test plan.
+- `references/notes/component-nextflow-testing.md`: Research note copied verbatim into the bundle. Interpret nf-test profiles, snapshot assertions, and Nextflow fixture conventions before translating them. Use when: converting test_candidates, snapshot fixtures, test profiles, or source test-data references into a Galaxy workflow test plan.
 - `references/notes/component-nextflow-testing.yml`: Companion file copied verbatim into the bundle. Sibling of `references/notes/component-nextflow-testing.md`; read it where that note directs.
 - `references/notes/iwc-shortcuts-anti-patterns.md`: Research note copied verbatim into the bundle. Distinguish accepted IWC-style test shortcuts from assertion smells while translating tests. Use when: deciding whether to use existence-only, size-only, image-dimension, or tolerant output checks.
 - `references/notes/iwc-test-data-conventions.md`: Research note copied verbatim into the bundle. Emit Galaxy/IWC-style job input fixtures, remote locations, hashes, and collection input shapes. Use when: writing job inputs or deciding whether fixtures belong in test-data, Zenodo, ENA/SRA, or CVMFS.
 - `references/notes/nextflow-snapshot-to-galaxy-assertions.md`: Research note copied verbatim into the bundle. Translate nf-test snapshot captures, helper-pruned file lists, and snapshot checksums into Galaxy workflow-test assertion intent. Use when: converting nf-test snapshot fixtures, .snap sidecars, ignore files, ignore globs, or pipeline-level stable path/name captures.
+- `references/notes/nextflow-test-case-selection.md`: Research note copied verbatim into the bundle. Preserve the upstream candidate-selection rationale and distinguish primary coverage from bootstrap-only or reference-scale cases. Use when: the selected case is minimal, tiny, full-scale, stub-only, or accompanied by deferred whole-pipeline candidates.
 - `references/notes/planemo-asserts-idioms.md`: Research note copied verbatim into the bundle. Describe Galaxy workflow-test assertion intent and tolerances for translated expected outputs. Use when: turning Nextflow expected outputs or snapshots into Galaxy test-plan assertions.
 - `references/schemas/tests-format.schema.json`: Schema file copied verbatim into the bundle. Use the Galaxy workflow tests schema as the assertion vocabulary when translating Nextflow test evidence into a Galaxy test plan. Use when: mapping expected outputs, tolerances, snapshots, or fixture assertions into Galaxy workflow-test assertion intent.
 
 ## Validation
 
-- Validate `galaxy-test-plan.yml` before returning it: run `foundry validate-galaxy-workflow-test-plan galaxy-test-plan.yml` from `@galaxy-foundry/gxwf-foundry`. If the command is not on PATH, run `npx --package @galaxy-foundry/gxwf-foundry foundry validate-galaxy-workflow-test-plan galaxy-test-plan.yml`. This checks artifact `galaxy-test-plan` against the galaxy-workflow-test-plan schema.
+- Before starting, check that the installed validator carries the galaxy-workflow-test-plan schema this bundle was cast with: run `foundry validate-galaxy-workflow-test-plan --schema-sha256 03fc1d58499c4bd5f3fa9556d771a8f24bcc8a387f120bd6eb28fe5f103ffc95` with no artifact. Exit 4, or an `unknown option '--schema-sha256'` error from a validator older than this check, means the validator and this bundle are out of step; stop and report that instead of producing an artifact the validator would misjudge.
+- Validate `galaxy-test-plan.yml` before returning it: run `foundry validate-galaxy-workflow-test-plan --schema-sha256 03fc1d58499c4bd5f3fa9556d771a8f24bcc8a387f120bd6eb28fe5f103ffc95 galaxy-test-plan.yml` from `@galaxy-foundry/gxwf-foundry`. If the command is not on PATH, run `npx --package @galaxy-foundry/gxwf-foundry foundry validate-galaxy-workflow-test-plan --schema-sha256 03fc1d58499c4bd5f3fa9556d771a8f24bcc8a387f120bd6eb28fe5f103ffc95 galaxy-test-plan.yml`. This checks artifact `galaxy-test-plan` against the galaxy-workflow-test-plan schema.
 
 ## Procedure
 
-Translate Nextflow test evidence into a Galaxy workflow test plan. The output is a reviewable YAML handoff conforming to galaxy-workflow-test-plan, not a concrete `tests-format` file: preserve profile, fixture, snapshot, ignored-file, expected-output, and rationale provenance so implement-galaxy-workflow-test can author the final Galaxy test artifact with the right labels and assertions. Because this plan is translated from real nf-test evidence, set `source.derived_from: test-evidence` and prefer `evidence: test-evidence` on the assertions it carries.
+Translate Nextflow test evidence into a Galaxy workflow test plan. The output is a reviewable YAML handoff conforming to galaxy-workflow-test-plan, not a concrete `tests-format` file: preserve profile, fixture, snapshot, ignored-file, expected-output, and rationale provenance so implement-galaxy-workflow-test can author the final Galaxy test artifact with the right labels and assertions. Because this plan is translated from real nf-test evidence, set `source.derived_from: test-evidence`.
+
+Set each assertion's `evidence` by where its expected value came from. Use `test-evidence` only for a value translated from an upstream assertion, checksum, or expected file. Use `fixture-derived` for a value measured from the upstream fixture bytes, and `intent` for one read from a wrapper XML or the translated workflow's step state. A snapshot `md5` token translated to `checksum` is `test-evidence`. A snapshot capture that records only names or paths (`stable_name`, `.nftignore`-pruned) carries no expected content: author those assertions as `fixture-derived` or `intent`, and when a test case ends up with no `test-evidence` assertions, record a `warnings[]` entry with code `no-upstream-expected-outputs`.
+
+Consume the candidate selected by summarize-nextflow; do not re-rank profiles here. Use nextflow-test-case-selection to preserve whether that case is primary coverage, a topology bootstrap, or reference-scale evidence, and to keep deferred science branches visible rather than presenting one translated test as exhaustive.
 
 ## Feedback Mode
 
