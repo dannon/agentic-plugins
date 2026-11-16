@@ -13,12 +13,12 @@ Follow the procedure below and use the artifact/reference sections as the runtim
 
 ## Inputs
 
-- Read artifact `summary-nextflow`. Schema: summary-nextflow. Produced by `summarize-nextflow`. Structured Nextflow summary from summarize-nextflow; carries the selected profile's `test_fixtures` and the full `nf_tests[]` enumeration — each declared input a role plus url/path, sha1, and filetype.
+- Read artifact `summary-nextflow`. Schema: summary-nextflow. Produced by `summarize-nextflow`. Structured Nextflow summary from summarize-nextflow; carries the enumerated `test_candidates[]` and explicit `test_selection`, with each candidate input represented by a role plus url/path, sha1, and filetype.
 - Read artifact `nextflow-galaxy-interface`. Produced by `nextflow-summary-to-galaxy-interface`. Galaxy interface brief from nextflow-summary-to-galaxy-interface pinning the workflow input labels, collection shapes, and datatypes each resolved fixture must map onto.
 
 ## Outputs
 
-- Write artifact `test-data-refs` as `test-data-refs.json`. Format: `json`. Test data resolved from the pipeline's declared fixtures, expressed as URLs/paths plus expected shapes for downstream test authoring. Shared id with find-test-data — the branch's search fallback fills only the inputs this Mold leaves unresolved.
+- Write artifact `test-data-refs` as `test-data-refs.json`. Format: `json`. Schema: test-data-refs. Test data resolved from the pipeline's declared fixtures, expressed as URLs/paths plus expected shapes for downstream test authoring. Shared id with find-test-data — the branch's search fallback fills only the inputs this Mold leaves unresolved.
 
 ## Required Tools
 
@@ -26,32 +26,34 @@ Follow the procedure below and use the artifact/reference sections as the runtim
 
 ## Load Upfront
 
-- `references/schemas/summary-nextflow.schema.json`: Schema file copied verbatim into the bundle. Input contract: read the selected profile's `test_fixtures.inputs[]` and the `nf_tests[]` enumeration — role, url/path, sha1, filetype — as the declared source of test data.
+- `references/schemas/summary-nextflow.schema.json`: Schema file copied verbatim into the bundle. Input contract: read `test_selection` and the chosen `test_candidates[].inputs[]` — role, url/path, sha1, filetype — as the declared source of test data.
+- `references/schemas/test-data-refs.schema.json`: Schema file copied verbatim into the bundle. Output contract: one ref per workflow input, resolved or an honest gap with a reason. Cast bundles the JSON Schema; validate with `foundry validate-test-data-refs` before returning.
 
 ## Load On Demand
 
-- `references/notes/component-nextflow-testing.md`: Research note copied verbatim into the bundle. Interpret nf-test profiles and fixture conventions before mapping declared fixtures onto Galaxy inputs. Use when: reading `test_fixtures` / `nf_tests` to decide which profile's fixtures best cover the workflow inputs.
+- `references/notes/component-nextflow-testing.md`: Research note copied verbatim into the bundle. Interpret nf-test profiles and fixture conventions before mapping declared fixtures onto Galaxy inputs. Use when: `test_selection` requires a scope choice or the selected candidate does not cover every workflow input.
 - `references/notes/component-nextflow-testing.yml`: Companion file copied verbatim into the bundle. Sibling of `references/notes/component-nextflow-testing.md`; read it where that note directs.
 - `references/notes/galaxy-workflow-testability-design.md`: Research note copied verbatim into the bundle. Map each declared fixture to an addressable Galaxy input label and the collection shape it must populate. Use when: mapping a declared fixture (often a samplesheet-driven input) onto a Galaxy input's collection shape.
 - `references/notes/iwc-test-data-conventions.md`: Research note copied verbatim into the bundle. Express each ref remote-URL-first with SHA-1 integrity and per-input collection layout when recording resolved fixtures. Use when: writing each `test-data-refs` entry.
 
 ## Validation
 
-- None declared.
+- Before starting, check that the installed validator carries the test-data-refs schema this bundle was cast with: run `foundry validate-test-data-refs --schema-sha256 534dcb2f44e24a33bd59de2bca8d882af97321c602cf1b66776c22c38b0207a8` with no artifact. Exit 4, or an `unknown option '--schema-sha256'` error from a validator older than this check, means the validator and this bundle are out of step; stop and report that instead of producing an artifact the validator would misjudge.
+- Validate `test-data-refs.json` before returning it: run `foundry validate-test-data-refs --schema-sha256 534dcb2f44e24a33bd59de2bca8d882af97321c602cf1b66776c22c38b0207a8 test-data-refs.json` from `@galaxy-foundry/gxwf-foundry`. If the command is not on PATH, run `npx --package @galaxy-foundry/gxwf-foundry foundry validate-test-data-refs --schema-sha256 534dcb2f44e24a33bd59de2bca8d882af97321c602cf1b66776c22c38b0207a8 test-data-refs.json`. This checks artifact `test-data-refs` against the test-data-refs schema.
 
 ## Procedure
 
-Resolve the Nextflow pipeline's own declared test fixtures into Galaxy `test-data-refs`. The Nextflow summary already carries the `test`-profile fixtures (`test_fixtures`) and the full nf-test enumeration (`nf_tests[]`) — each declared input a `role` plus a `url`/`path`, `sha1`, and `filetype`. Map those onto the Galaxy workflow's inputs and emit one ref per input, ready for implement-galaxy-workflow-test to stage.
+Resolve the Nextflow pipeline's own declared test fixtures into Galaxy `test-data-refs`. The Nextflow summary carries every statically visible whole-pipeline case in `test_candidates[]` and records the default decision in `test_selection`. Each candidate owns its effective profiles, parameter delta, inputs, outputs, execution mode, scope, and assertions. Map the selected candidate's inputs onto the Galaxy workflow and emit one ref per input, ready for implement-galaxy-workflow-test to stage. If selection is unresolved, surface that scope decision before resolving data rather than silently choosing by profile name.
 
 This skill is the source-specific first leg of the harness's `test-data-resolution` branch. It resolves what the pipeline itself declares; any input it cannot resolve from a declared fixture stays a reported gap and the harness falls through to find-test-data (search), then to `user-supplied`. Deciding to fall through is a harness concern, not this skill's — its job is an honest map of the pipeline's own fixtures.
 
 ### Sequence
 
 1. **Enumerate Galaxy inputs and their required shape.** From the interface brief, list each workflow input: label, Galaxy collection shape (File / list / paired / list:paired / record), and datatype. This is the *target shape* every ref must satisfy.
-2. **Read the declared fixtures.** From the summary's `test_fixtures.inputs[]` (selected profile) and `nf_tests[]` (other profiles), collect each declared input: `role`, `url`/`path`, `sha1`, `filetype`, and description. Prefer the profile whose fixtures best cover the workflow's inputs.
+2. **Resolve the candidate.** Read `test_selection`. If it names a candidate, collect that candidate's declared inputs: `role`, `url`/`path`, `sha1`, `filetype`, and description. If it reports `needs-scope-choice`, compare the candidates' scope, execution mode, and input coverage and record the caller's choice; do not infer scale or representativeness from a profile name alone.
 3. **Map each declared fixture onto a Galaxy input.** Match by role and shape onto the interface's input labels. A samplesheet-driven Nextflow input often expands into a Galaxy collection — record the element identifiers and any split/concatenation prep needed to reach the Galaxy collection shape (galaxy-workflow-testability-design).
-4. **Emit refs.** Write one `test-data-refs.json` entry per resolved input: prefer the declared remote `url` + `sha1` (remote-URL-first, iwc-test-data-conventions); fall back to the in-tree `path` plus provenance only when no URL is published. Carry datatype, collection element identifiers, and any subset/split prep. Each entry maps to an addressable workflow input label.
-5. **Report genuine gaps.** An input with no declared fixture of the right shape stays `resolved: false` with a reason — this is what the harness hands to find-test-data. Do not search public sources here; searching is find-test-data's job, not this skill's.
+4. **Emit refs.** Write one `test-data-refs.json` entry per resolved input: prefer the declared remote `url` + `sha1` (remote-URL-first, iwc-test-data-conventions); fall back to the in-tree `path` plus provenance only when no URL is published. Carry datatype, collection element identifiers, and any subset/split prep. Each entry maps to an addressable workflow input label. Shape each entry per test-data-refs with `resolved_by: nextflow-to-test-data`, and validate the file with `foundry validate-test-data-refs` before returning.
+5. **Report genuine gaps.** An input with no declared fixture of the right shape stays `resolved: false` with a reason and `storage: unresolved` — this is what the harness hands to find-test-data. Do not search public sources here; searching is find-test-data's job, not this skill's.
 
 ### No fabrication
 
